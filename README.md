@@ -1,20 +1,20 @@
 # Interview Ready Gems 💎
 
-A powerhouse suite of companion apps built to enhance **Interview Ready** experience. Each feature is crafted to help developers train smarter, assess better, and optimize their workflow—ensuring they stand out and get hired faster.
+A powerhouse suite of companion apps built to enhance **Interview Ready** experience. Each feature is built to help developers train smarter, assess better, and optimize their workflow—ensuring they stand out and get hired faster.
 
-## 🚀 About This Repository
+## About This Repository
 
 This is a **Next.js** project designed with a **modular architecture** to support multiple features, such as **Resume Checker** and **Take Home Checker**. Each feature is encapsulated within its own directory, ensuring better maintainability and scalability.
 
 
 
-## 🚀 Features
+## Features
 
 - **Resume Checker**: A tool for analyzing and reviewing resumes.
 - **Take Home Checker**: A tool to assess take-home assignments.
 
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 /src/
@@ -43,7 +43,7 @@ This is a **Next.js** project designed with a **modular architecture** to suppor
   package.json
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1️⃣ Install Dependencies
 
@@ -66,7 +66,7 @@ npm run build
 npm start
 ```
 
-## 🏗️ Architectural Decisions
+## Architectural Decisions
 
 ### 1️⃣ **Encapsulation per Feature**
 Each feature has its own `/pages/` directory inside `/src/features/`. This structure keeps feature-specific code self-contained while still allowing for shared utilities.
@@ -81,26 +81,6 @@ Common UI elements and business logic reside in `/src/components/` and `/src/ser
 - **Tailwind CSS** is the primary styling approach.
 - **CSS-in-JS (Styled Components, Emotion, etc.)** can be used per feature, ensuring flexibility without enforcing a single styling method.
 
-## 🚀 Deploying on Vercel
 
-This project is optimized for deployment on **Vercel**. To deploy:
-
-1. Push your code to a GitHub repository.
-2. Connect the repository to [Vercel](https://vercel.com/).
-3. Vercel will automatically build and deploy the app.
-
-For manual deployment:
-
-```bash
-vercel
-```
-
-## 📖 Additional Resources
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Vercel Deployment Guide](https://nextjs.org/docs/pages/building-your-application/deploying)
-
----
-
-This project is designed to be **scalable, maintainable, and easy to extend**. Contributions and improvements are always welcome! 🚀
+This project is designed to be **scalable, maintainable, and easy to extend**. Keep it that way
 
