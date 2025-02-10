@@ -4,11 +4,23 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY!,
 });
 
+const SYSTEM_MESSAGE = `
+You are a Principal Software Engineer, an expert in analyzing GitHub repositories. Always structure responses with:
+- ✅ Strengths
+- ❌ Weaknesses
+- 🔧 Key Improvements
+- 🏆 Overall Evaluation
+
+Limit responses to concise bullet points.`;
+
 export async function analyzeText(prompt: string): Promise<string> {
+
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4-turbo",
-            messages: [{ role: "user", content: prompt }],
+            messages: [
+                { role: "system", content: SYSTEM_MESSAGE },
+                { role: "user", content: prompt }],
             max_tokens: 500,
         });
 
