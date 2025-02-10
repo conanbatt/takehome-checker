@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Repo } from "@/types/repo";
 import ProjectAnalysis from "./ProjectAnalysis";
 import { RepositoryList } from "@/features/take-home-checker/components/RepositoryList";
-import { FolderArchiveIcon, FolderCode, GitBranchIcon, TextIcon } from "lucide-react";
+import { FolderCode, GitBranchIcon, TextIcon } from "lucide-react";
+import { useProjectAnalysis } from "@/hooks/useProjectAnalysis";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface RepoAnalysisProps {
   repos: Repo[];
@@ -11,34 +13,11 @@ interface RepoAnalysisProps {
 
 export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
   const [selectedRepo, setSelectedRepo] = useState<Repo | null>(null);
-  const [analysis, setAnalysis] = useState<{readme: string, structure: string, gitHistory: string} | null>(null);
 
-  const handleAnalyzeClick = async () => {
-    try {
-      const response = await fetch("/api/analyze/project", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          repo: selectedRepo.name,
-          owner: selectedRepo.owner,
-          token: token,
-        }),
-      });
+  const { data: analysis, isLoading, isError, error, isSuccess, refetch } = useProjectAnalysis(selectedRepo, token);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setAnalysis(data);
-      } else {
-        console.error("Error analyzing Project:", data.message);
-        setAnalysis(null);
-      }
-    } catch (error) {
-      console.error("Failed to fetch Project analysis:", error);
-      setAnalysis(null);
-    }
+  const handleAnalyzeClick = () => {
+    refetch();
   };
 
   return (
@@ -55,8 +34,16 @@ export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
         </div>
       )}
 
+      {isLoading && (
+        <div className="w-full flex justify-center mt-4">
+          <LoadingSpinner />
+        </div>
+      )}
+
+      {isError && <p className="text-red-500 text-center">Error: {error instanceof Error ? error.message : "An error occurred"}</p>}
+
       {analysis?.readme && <ProjectAnalysis icon={<TextIcon />} title="Readme analysis" analysis={analysis?.readme} />}
-      {analysis?.structure && <ProjectAnalysis icon={<FolderCode/>} title="Project structure analysis" analysis={analysis?.structure} />}
+      {analysis?.structure && <ProjectAnalysis icon={<FolderCode />} title="Project structure analysis" analysis={analysis?.structure} />}
       {analysis?.gitHistory && <ProjectAnalysis icon={<GitBranchIcon />} title="Git history analysis" analysis={analysis?.gitHistory} />}
     </div>
   );
