@@ -1,9 +1,8 @@
-// components/RepoAnalysis.tsx
-
 import { useState } from "react";
 import { Repo } from "@/types/repo";
 import ProjectAnalysis from "./ProjectAnalysis";
 import { RepositoryList } from "@/features/take-home-checker/components/RepositoryList";
+import { FolderArchiveIcon, FolderCode, GitBranchIcon, TextIcon } from "lucide-react";
 
 interface RepoAnalysisProps {
   repos: Repo[];
@@ -12,7 +11,7 @@ interface RepoAnalysisProps {
 
 export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
   const [selectedRepo, setSelectedRepo] = useState<Repo | null>(null);
-  const [analysis, setAnalysis] = useState<{readme: string, structure: string} | null>(null);
+  const [analysis, setAnalysis] = useState<{readme: string, structure: string, gitHistory: string} | null>(null);
 
   const handleAnalyzeClick = async () => {
     try {
@@ -29,7 +28,6 @@ export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
       });
 
       const data = await response.json();
-      console.log("🚀 ~ handleAnalyzeClick ~ data:", data)
 
       if (response.ok) {
         setAnalysis(data);
@@ -57,8 +55,9 @@ export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
         </div>
       )}
 
-      {analysis?.readme && <ProjectAnalysis icon="📄" title="Readme analysis" analysis={analysis?.readme} />}
-      {analysis?.structure && <ProjectAnalysis icon="🗂️" title="Project structure analysis" analysis={analysis?.structure} />}
+      {analysis?.readme && <ProjectAnalysis icon={<TextIcon />} title="Readme analysis" analysis={analysis?.readme} />}
+      {analysis?.structure && <ProjectAnalysis icon={<FolderCode/>} title="Project structure analysis" analysis={analysis?.structure} />}
+      {analysis?.gitHistory && <ProjectAnalysis icon={<GitBranchIcon />} title="Git history analysis" analysis={analysis?.gitHistory} />}
     </div>
   );
 }

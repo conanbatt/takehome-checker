@@ -4,13 +4,13 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY!,
 });
 
-export async function analyzeText(text: string): Promise<string> {
+export async function analyzeText(prompt: string): Promise<string> {
     try {
         const response = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "system", content: "Analyze the following README content." }, { role: "user", content: text }],
-            max_tokens: 150,
-          });
+            model: "gpt-4-turbo",
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 500,
+        });
 
         return response.choices[0].message.content || 'No analysis available';
     } catch (error) {
