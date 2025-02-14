@@ -1,28 +1,52 @@
-import { ReactNode } from "react";
-import ReactMarkdown from "react-markdown";
-
 interface ProjectAnalysisProps {
-  icon?: ReactNode | string;
-  title: string;
-  analysis: string;
+  grade: "S" | "A" | "B" | "C" | "D";
+  summary: string;
+  redFlags: string[];
+  yellowFlags: string[];
 }
 
-export default function ProjectAnalysis({ icon, title, analysis }: ProjectAnalysisProps) {
+const gradeColors = {
+  S: "bg-gradient-to-br from-blue-500 to-blue-700",
+  A: "bg-green-500",
+  B: "bg-yellow-500",
+  C: "bg-orange-500",
+  D: "bg-red-500",
+};
+
+export default function ProjectAnalysis({
+  grade,
+  summary,
+  redFlags,
+  yellowFlags,
+}: ProjectAnalysisProps) {
   return (
-    <div className="mt-8 bg-gradient-to-br from-gray-50 to-white shadow-xl rounded-3xl border border-gray-200 p-8 transition-all hover:shadow-2xl max-w-4xl mx-auto">
-      <div className="flex items-start gap-6">
-        <div className="w-16 h-16 flex items-center justify-center bg-blue-200 text-blue-800 rounded-xl text-3xl shadow-md">
-          {icon || "📄"}
-        </div>
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-          <div className="text-gray-700 space-y-4">
-            <ReactMarkdown className="leading-relaxed text-md whitespace-pre-wrap">
-              {analysis}
-            </ReactMarkdown>
-          </div>
-        </div>
+    <div className="max-w-2xl mx-auto p-6 border rounded-lg shadow-lg bg-white">
+      <div className={`text-white p-3 rounded-md ${gradeColors[grade]}`}>
+        <h2 className="text-lg font-bold">Project Score: {grade}</h2>
       </div>
+      <p className="mt-4 text-gray-700">{summary}</p>
+
+      {redFlags.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-red-600 font-semibold text-lg">🚩 Red Flags ({redFlags.length})</h3>
+          <ul className="list-disc list-inside text-gray-700">
+            {redFlags.map((flag, index) => (
+              <li key={index}>{flag}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {yellowFlags.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-yellow-600 font-semibold text-lg">⚠️ Yellow Flags ({yellowFlags.length})</h3>
+          <ul className="list-disc list-inside text-gray-700">
+            {yellowFlags.map((flag, index) => (
+              <li key={index}>{flag}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

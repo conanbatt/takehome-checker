@@ -1,9 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
 interface AnalysisData {
-  readme: string;
-  structure: string;
-  gitHistory: string;
+  content: string;
+  analysis: {
+    grade: "A" | "B" | "C" | "D";
+    summary: string;
+    redFlags: string[];
+    yellowFlags: string[];
+  }
 }
 
 async function fetchProjectAnalysis(repoName: string, owner: string, token: string): Promise<AnalysisData> {
