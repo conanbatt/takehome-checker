@@ -1,6 +1,6 @@
 import { analyzeText } from "@/lib/openai";
 import { Octokit } from "octokit";
-import { fetchGitHistory, fetchReadme, fetchRepoFiles } from "./github";
+import { fetchFileContent, fetchGitHistory, fetchReadme, fetchRelevantFiles, fetchRepoFiles } from "./github";
 
 export async function analyzeReadme(owner: string, repo: string, octokit: Octokit) {
   const readmeContent = await fetchReadme(owner, repo, octokit);
@@ -77,12 +77,40 @@ export async function analyzeGitHistory(owner: string, repo: string, octokit: Oc
   return { analysis }
 }
 
+export async function analyzeCodeQuality(owner: string, repo: string, octokit: Octokit) {
+  const relevantFiles = await fetchRelevantFiles(owner, repo, octokit);
+
+  const fileContents = await Promise.all(
+    relevantFiles.map(async file => ({
+      file,
+      content: await fetchFileContent(owner, repo, file, octokit)
+    }))
+  );
+
+  const prompt = `
+    Analiza los siguientes archivos de código en busca de **buenas prácticas**.
+    
+    - ¿Se siguen los patrones correctos(idioms) para React y TypeScript?
+    - ¿Se identifican code smells o patrones incorrectos?
+    - ¿El código es modular y reutilizable?
+    - ¿Se detectan posibles bugs?
+
+    Archivos:
+    ${fileContents.map(f => `**${f.file}**\n\`\`\`\n${f.content.slice(0, 1000)}...\n\`\`\``).join("\n\n")}
+  `;
+
+  const analysis = await analyzeText(prompt);
+  console.log("🚀 ~ analyzeCodeQuality ~ analysis:", analysis)
+  return { analysis }
+}
+
 
 export async function analyzeRepository(owner: string, repo: string, octokit: Octokit) {
-  const [readmeAnalysis, structureAnalysis, gitHistoryAnalysis] = await Promise.all([
+  const [readmeAnalysis, codeQualityAnalysis, gitHistoryAnalysis, structureAnalysis] = await Promise.all([
     analyzeReadme(owner, repo, octokit),
+    analyzeCodeQuality(owner, repo, octokit),
+    analyzeGitHistory(owner, repo, octokit),
     analyzeProjectStructure(owner, repo, octokit),
-    analyzeGitHistory(owner, repo, octokit)
   ]);
 
   const prompt = `
@@ -90,6 +118,9 @@ export async function analyzeRepository(owner: string, repo: string, octokit: Oc
 
     Análisis de README:
     ${readmeAnalysis.analysis}
+
+    Análisis del code quality del proyecto:
+    ${codeQualityAnalysis.analysis}
     
     Análisis de la estructura del proyecto:
     ${structureAnalysis.analysis}
@@ -106,7 +137,7 @@ export async function analyzeRepository(owner: string, repo: string, octokit: Oc
        - **B (Bueno)**: Cumple con la mayoría de los criterios, pero tiene problemas notables, requiere mejoras para obtener una calificación más alta.
        - **C (Justo)**: Aceptable, pero falla en áreas significativas como escalabilidad o elecciones tecnológicas.
        - **D (Pobre)**: Problemas importantes con el repositorio, incluidos errores, mala arquitectura o falta de características clave.
-    4️⃣ Resume el análisis en unas pocas frases y justifica la calificación.
+    4️⃣ Resume el análisis y justifica la calificación.
 
     Criterios de Bandera Verde (aspectos positivos):
     💯 **Desafíos take-home excepcionales**
@@ -114,7 +145,6 @@ export async function analyzeRepository(owner: string, repo: string, octokit: Oc
     Las entregas que impresionan evidencian excelentes rasgos como experiencia, creatividad, intuición e ingenio. Este es el momento para venderte en lugar de vender a un ingeniero. ¡Usá tus habilidades para hacer algo que nadie más haría!
     Algunos ejemplos:
     - [ ] Enseñale algo al entrevistador: Presentá un nuevo concepto, técnica o giro que el entrevistador probablemente no conozca. Aportá una perspectiva innovadora que sorprenda.
-    - [ ] Demostrá un compromiso excepcional: Esforzate 10 veces más, entregá un trabajo que supere las expectativas.
     - [ ] Resolvé el desafío de una manera creativa: Hacelo de manera innovadora, que demuestre ingenio.
     - [ ] Agregá una característica inesperada: Demostrá tu sentido del producto mejorando la experiencia del usuario con una característica innovadora pero necesaria.
 

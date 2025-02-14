@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Octokit } from "octokit";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { analyzeGitHistory, analyzeProjectStructure, analyzeReadme, analyzeRepository } from "@/lib/analyze";
+import { analyzeRepository } from "@/lib/analyze";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions);

@@ -1,53 +1,114 @@
 import { Octokit } from "octokit";
 
 interface GitCommit {
-    message: string;
-    author: {
-        name: string;
-        date: string;
-    };
+  message: string;
+  author: {
+    name: string;
+    date: string;
+  };
 }
 
 interface FileEntry {
-    path: string;
+  path: string;
 }
 
 export async function fetchReadme(owner: string, repo: string, octokit: Octokit): Promise<string | null> {
-    try {
-        const { data } = await octokit.request(`GET /repos/${owner}/${repo}/contents/README.md`, {
-            headers: {
-                'X-GitHub-Api-Version': '2022-11-28'
-            },
-        });
+  try {
+    const { data } = await octokit.request(`GET /repos/${owner}/${repo}/contents/README.md`, {
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      },
+    });
 
-        return data?.content ? Buffer.from(data.content, "base64").toString("utf-8") : null;
-    } catch (error) {
-        console.error("Error fetching README:", error);
-        return null;
-    }
+    return data?.content ? Buffer.from(data.content, "base64").toString("utf-8") : null;
+  } catch (error) {
+    console.error("Error fetching README:", error);
+    return null;
+  }
 }
 
+const repoFilesCache = new Map<string, { files: string[]; timestamp: number }>();
+const CACHE_DURATION = 2 * 60 * 1000;
+
 export async function fetchRepoFiles(owner: string, repo: string, octokit: Octokit): Promise<string[]> {
-    const response = await octokit.request(
-      "GET /repos/{owner}/{repo}/git/trees/HEAD?recursive=1",
-      { owner, repo }
-    );
-  
-    return response.data.tree.map((entry: FileEntry) => entry.path);
+  const cacheKey = `${owner}/${repo}`;
+  const cachedData = repoFilesCache.get(cacheKey);
+  const now = Date.now();
+
+  if (cachedData && now - cachedData.timestamp < CACHE_DURATION) {
+    return cachedData.files;
   }
 
-export async function fetchGitHistory(owner: string, repo: string, octokit: Octokit): Promise<{
-    message: string;
-    author: string;
-    date: string;
-  }[]> {
-    const { data } = await octokit.request(`GET /repos/${owner}/${repo}/commits`, {
-      per_page: 30,
-    });
-  
-    return data.map((item: { commit: GitCommit }) => ({
-      message: item.commit.message,
-      author: item.commit.author.name,
-      date: item.commit.author.date,
-    }));
+  const response = await octokit.request(
+    "GET /repos/{owner}/{repo}/git/trees/HEAD?recursive=1",
+    { owner, repo }
+  );
+
+  const files = response.data.tree.map((entry: FileEntry) => entry.path);
+
+  repoFilesCache.set(cacheKey, { files, timestamp: now });
+
+  return files;
+}
+
+
+const fileContentCache = new Map<string, { content: string; timestamp: number }>();
+
+export async function fetchFileContent(
+  owner: string,
+  repo: string,
+  file: string,
+  octokit: Octokit
+): Promise<string> {
+  const cacheKey = `${owner}/${repo}/${file}`;
+  const cachedData = fileContentCache.get(cacheKey);
+  const now = Date.now();
+
+  // 🔄 Si los datos están en caché y aún son válidos, retornarlos
+  if (cachedData && now - cachedData.timestamp < CACHE_DURATION) {
+    return cachedData.content;
   }
+
+  try {
+    const response = await octokit.request("GET /repos/{owner}/{repo}/contents/{path}", {
+      owner,
+      repo,
+      path: file,
+    });
+
+    // 📜 GitHub devuelve el contenido en base64, lo decodificamos
+    const content = Buffer.from(response.data.content, "base64").toString("utf-8");
+
+    // 📝 Guardar en caché con timestamp actualizado
+    fileContentCache.set(cacheKey, { content, timestamp: now });
+
+    return content;
+  } catch (error) {
+    console.error(`Error fetching file ${file}:`, error);
+    throw new Error(`Failed to fetch file: ${file}`);
+  }
+}
+
+export async function fetchRelevantFiles(owner: string, repo: string, octokit: Octokit) {
+  const allFiles = await fetchRepoFiles(owner, repo, octokit);
+
+  return allFiles.filter(file =>
+    file.match(/(index\.tsx?|server\.ts|routes\/|controllers\/|components\/|App\.tsx?|package\.json)/)
+  );
+}
+
+export async function fetchGitHistory(owner: string, repo: string, octokit: Octokit): Promise<{
+  message: string;
+  author: string;
+  date: string;
+}[]> {
+  const { data } = await octokit.request(`GET /repos/${owner}/${repo}/commits`, {
+    per_page: 30,
+  });
+
+  return data.map((item: { commit: GitCommit }) => ({
+    message: item.commit.message,
+    author: item.commit.author.name,
+    date: item.commit.author.date,
+  }));
+}

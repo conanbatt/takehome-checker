@@ -5,15 +5,10 @@ const openai = new OpenAI({
 });
 
 const SYSTEM_MESSAGE = `
-You are a Principal Software Engineer, an expert in analyzing GitHub repositories. Always structure responses with:
-- ✅ Strengths
-- ❌ Weaknesses
-- 🔧 Key Improvements
-- 🏆 Overall Evaluation
-
+You are a Principal Software Engineer, an expert in analyzing GitHub repositories.
 Limit responses to concise bullet points.`;
 
-export async function analyzeText(prompt: string): Promise<string> {
+export async function analyzeText(prompt: string, max_tokens = 1000): Promise<string> {
 
     try {
         const response = await openai.chat.completions.create({
@@ -21,7 +16,7 @@ export async function analyzeText(prompt: string): Promise<string> {
             messages: [
                 { role: "system", content: SYSTEM_MESSAGE },
                 { role: "user", content: prompt }],
-            max_tokens: 1000,
+            max_tokens,
         });
 
         return response.choices[0].message.content || 'No analysis available';
