@@ -21,7 +21,7 @@ export async function analyzeText(prompt: string): Promise<string> {
             messages: [
                 { role: "system", content: SYSTEM_MESSAGE },
                 { role: "user", content: prompt }],
-            max_tokens: 500,
+            max_tokens: 1000,
         });
 
         return response.choices[0].message.content || 'No analysis available';

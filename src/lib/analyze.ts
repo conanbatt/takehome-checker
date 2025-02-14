@@ -2,75 +2,155 @@ import { analyzeText } from "@/lib/openai";
 import { Octokit } from "octokit";
 import { fetchGitHistory, fetchReadme, fetchRepoFiles } from "./github";
 
-
 export async function analyzeReadme(owner: string, repo: string, octokit: Octokit) {
-    const readmeContent = await fetchReadme(owner, repo, octokit);
+  const readmeContent = await fetchReadme(owner, repo, octokit);
 
-    if (!readmeContent) {
-        return { message: "README.md not found in the repository." };
-    }
+  if (!readmeContent) {
+    return { message: "README.md no encontrado en el repositorio." };
+  }
 
-    const prompt = `
-  Analyze the following README file for best practices and provide a **concise summary** considering the following aspects:
+  const prompt = `
+  Analiza el siguiente archivo README para buenas prácticas y proporciona un **resumen conciso** considerando los siguientes aspectos:
 
-  1️⃣ **Technology Stack**: Is the tech stack mentioned clearly? Is it modern and relevant?
-  2️⃣ **Installation & Usage**: Are there clear instructions to install, run, and test the project? Are the dependencies listed with their versions?
-  3️⃣ **Deployment & Accessibility**: Does it mention if the project is deployed or how to test it easily? Are there clear steps for deployment if applicable?
-  4️⃣ **Technical Decisions**: Does it explain key technical choices made (such as why certain libraries or frameworks were used)?
-  5️⃣ **Testing**: Does it include details about tests (manual or automated)? Is there any coverage or tool mentioned for testing?
-  6️⃣ **Requirements Compliance**: Does it define objectives and expected functionalities clearly? Are the requirements met and is there a clear plan to verify the solution?  **Limit response to 3-5 bullet points, avoiding excessive details.**
+  1️⃣ **Stack Tecnológico**: ¿El stack tecnológico está claramente mencionado? ¿Es moderno y relevante?
+  2️⃣ **Instalación y Uso**: ¿Existen instrucciones claras para instalar, ejecutar y probar el proyecto? ¿Se mencionan las dependencias y sus versiones?
+  3️⃣ **Despliegue y Accesibilidad**: ¿Menciona si el proyecto está desplegado o cómo probarlo fácilmente? ¿Existen pasos claros para el despliegue si aplica?
+  4️⃣ **Decisiones Técnicas**: ¿Explica las decisiones clave tomadas (como por qué se utilizaron ciertas bibliotecas o frameworks)?
+  5️⃣ **Pruebas**: ¿Incluye detalles sobre pruebas (manuales o automatizadas)? ¿Se menciona alguna herramienta o cobertura para las pruebas?
+  6️⃣ **Cumplimiento de Requerimientos**: ¿Define claramente los objetivos y funcionalidades esperadas? ¿Se cumplen los requisitos y existe un plan claro para verificar la solución? **Limita la respuesta a 3-5 puntos, evitando detalles excesivos.**
 
-  ** ⚠️ Limit response to 3-5 bullet points, avoiding excessive details.**
+  ** ⚠️ Limita la respuesta a 3-5 puntos, evitando detalles excesivos.**
 
-  README Content:
+  Contenido del README:
   ${readmeContent}
 `;
 
-    return await analyzeText(prompt);
+  const analysis = await analyzeText(prompt);
+  return { analysis, content: readmeContent }
 }
 
 export async function analyzeProjectStructure(owner: string, repo: string, octokit: Octokit) {
-    const allFilePaths = await fetchRepoFiles(owner, repo, octokit);
+  const allFilePaths = await fetchRepoFiles(owner, repo, octokit);
 
-    if (allFilePaths.length === 0) {
-        return { message: "Unable to fetch project structure or repository is empty." };
-    }
+  if (allFilePaths.length === 0) {
+    return { message: "No se pudo obtener la estructura del proyecto o el repositorio está vacío." };
+  }
 
-    const prompt = `
-    Evaluate the following project structure and determine if it follows best practices for a technical take-home challenge and provide a **concise summary** considering the following aspects:
+  const prompt = `
+    Evalúa la siguiente estructura del proyecto y determina si sigue las mejores prácticas para un desafío técnico y proporciona un **resumen conciso** considerando los siguientes aspectos:
 
-    1️⃣ **Folder & File Organization**: Are files and folders well-structured according to common project conventions? Are there redundant or missing files? For example, is there a clear separation between source code, assets, and configuration files?
-    2️⃣ **Code Quality & Readability**: Are there clear separations between different parts of the project (e.g., components, utilities, tests)? Is there a consistent naming convention and folder structure for various modules?
+    1️⃣ **Organización de Carpetas y Archivos**: ¿Los archivos y carpetas están bien estructurados según las convenciones comunes del proyecto? ¿Hay archivos redundantes o faltantes? Por ejemplo, ¿hay una separación clara entre el código fuente, los assets y los archivos de configuración?
+    2️⃣ **Calidad del Código y Legibilidad**: ¿Existen separaciones claras entre las distintas partes del proyecto (por ejemplo, componentes, utilidades, pruebas)? ¿Se sigue una convención de nombres y estructura de carpetas consistente para los módulos?
 
-    ** ⚠️ Limit response avoiding excessive details.**
+    ** ⚠️ Limita la respuesta evitando detalles excesivos.**
 
-    **Project Structure:**
+    **Estructura del Proyecto:**
     ${allFilePaths.join("\n")}
   `;
 
-    return await analyzeText(prompt);
+  const analysis = await analyzeText(prompt);
+  return { analysis }
 }
 
 export async function analyzeGitHistory(owner: string, repo: string, octokit: Octokit) {
-    const gitHistory = await fetchGitHistory(owner, repo, octokit);
+  const gitHistory = await fetchGitHistory(owner, repo, octokit);
 
-    if (gitHistory.length === 0) {
-        return { message: "No commits found in the repository." };
-    }
+  if (gitHistory.length === 0) {
+    return { message: "No se encontraron commits en el repositorio." };
+  }
 
-    const prompt = `
-  Analyze the Git commit history for best practices. Provide a **brief summary** the following aspects:
+  const prompt = `
+  Analiza el historial de commits de Git para buenas prácticas. Proporciona un **resumen breve** de los siguientes aspectos:
 
-    1️⃣ **Commit Messages**: Are the commit messages clear, concise, and meaningful? Do they follow a consistent format?
-    2️⃣ **Test & Feature Driven Development**: Do commit messages indicate work on specific features or tests?
-    3️⃣ **Atomic Commits**: Are the commits atomic, meaning that each commit addresses a single task or feature, making them easier to understand and review?
-    4️⃣ **Code Refactoring & Formatting**: Do the commit messages reflect any code refactoring or formatting changes that improve readability, organization, or maintainability?
+    1️⃣ **Mensajes de Commit**: ¿Son los mensajes de commit claros, concisos y significativos? ¿Siguen un formato consistente?
+    2️⃣ **Desarrollo Basado en Pruebas y Características**: ¿Los mensajes de commit indican trabajo en características o pruebas específicas?
+    3️⃣ **Commits Atómicos**: ¿Son los commits atómicos, es decir, cada commit aborda una tarea o característica única, lo que facilita su comprensión y revisión?
+    4️⃣ **Refactorización de Código y Formato**: ¿Reflejan los mensajes de commit cambios de refactorización de código o formato que mejoren la legibilidad, organización o mantenibilidad?
 
-    ** ⚠️ Limit response avoiding excessive details.**
+    ** ⚠️ Limita la respuesta evitando detalles excesivos.**
 
-    **Git Commit History:**
-    ${gitHistory.map(commit => `- ${commit.date}: ${commit.message} by ${commit.author}`).join("\n")}
+    **Historial de Commits de Git:**
+    ${gitHistory.map(commit => `- ${commit.date}: ${commit.message} por ${commit.author}`).join("\n")}
   `;
 
-    return await analyzeText(prompt);
+  const analysis = await analyzeText(prompt);
+  return { analysis }
+}
+
+
+export async function analyzeRepository(owner: string, repo: string, octokit: Octokit) {
+  const [readmeAnalysis, structureAnalysis, gitHistoryAnalysis] = await Promise.all([
+    analyzeReadme(owner, repo, octokit),
+    analyzeProjectStructure(owner, repo, octokit),
+    analyzeGitHistory(owner, repo, octokit)
+  ]);
+
+  const prompt = `
+    Basado en los siguientes análisis del repositorio, proporciona una calificación final (S, A, B, C, D), un resumen y destaca las banderas rojas, amarillas y verdes si es aplicable. Utiliza los estándares de calificación de Silicon Valley para startups.
+
+    Análisis de README:
+    ${readmeAnalysis.analysis}
+    
+    Análisis de la estructura del proyecto:
+    ${structureAnalysis.analysis}
+    
+    Análisis del historial de Git:
+    ${gitHistoryAnalysis.analysis}
+    
+    Por favor, evalúa:
+    1️⃣ Calidad general del repositorio, considerando la tecnología más reciente, escalabilidad e innovación.
+    2️⃣ Identifica cualquier problema crítico (banderas rojas), menor (banderas amarillas) y aspectos positivos (banderas verdes).
+    3️⃣ Proporciona una calificación final según los estándares de Silicon Valley:
+       - **S (Excepcional)**: Repositorio sobresaliente, cumple con todos los criterios a un nivel alto, escalable, innovador y sin errores.
+       - **A (Fuerte)**: Repositorio de alta calidad con problemas menores o áreas de mejora.
+       - **B (Bueno)**: Cumple con la mayoría de los criterios, pero tiene problemas notables, requiere mejoras para obtener una calificación más alta.
+       - **C (Justo)**: Aceptable, pero falla en áreas significativas como escalabilidad o elecciones tecnológicas.
+       - **D (Pobre)**: Problemas importantes con el repositorio, incluidos errores, mala arquitectura o falta de características clave.
+    4️⃣ Resume el análisis en unas pocas frases y justifica la calificación.
+
+    Criterios de Bandera Verde (aspectos positivos):
+    💯 **Desafíos take-home excepcionales**
+    Las entregas excepcionales son aquellas memorables para los entrevistadores. Las van a recordar mucho tiempo después de que se hayan hecho porque se destacan entre las demás.
+    Las entregas que impresionan evidencian excelentes rasgos como experiencia, creatividad, intuición e ingenio. Este es el momento para venderte en lugar de vender a un ingeniero. ¡Usá tus habilidades para hacer algo que nadie más haría!
+    Algunos ejemplos:
+    - [ ] Enseñale algo al entrevistador: Presentá un nuevo concepto, técnica o giro que el entrevistador probablemente no conozca. Aportá una perspectiva innovadora que sorprenda.
+    - [ ] Demostrá un compromiso excepcional: Esforzate 10 veces más, entregá un trabajo que supere las expectativas.
+    - [ ] Resolvé el desafío de una manera creativa: Hacelo de manera innovadora, que demuestre ingenio.
+    - [ ] Agregá una característica inesperada: Demostrá tu sentido del producto mejorando la experiencia del usuario con una característica innovadora pero necesaria.
+
+    **Checklist General**:
+    - **Stack tecnológico seleccionado**: Elegir el stack más actualizado y cercano al cliente.
+    - **Historial de Git**: Separar el boilerplate de las contribuciones originales y hacer commits legibles y bien comentados.
+    - **Fácil de probar**: Si es posible, deployar el proyecto para que el entrevistador lo pruebe sin instalar nada.
+    - **Documentación**: Incluir instrucciones claras y casos de prueba. Asegurarse de que la documentación funcione correctamente.
+    - **SIN BUGS**: No deben existir bugs, ya que pueden afectar negativamente la evaluación.
+    - **Cumplir con los requerimientos**: Cumplir los requisitos técnicos y del producto de manera precisa.
+    - **Velocidad de entrega**: Cumplir con los deadlines o entregar el challenge dentro de un tiempo razonable.
+    - **Limitar el uso de Generative AI**: Evitar el uso de IA generativa para comentarios o para realizar la entrega.
+    - **Testear el código**: Incluir pruebas que demuestren la capacidad del candidato para testear el código adecuadamente.
+
+    Criterios de Bandera Roja (problemas críticos):
+    - Stack tecnológico obsoleto o dependencias faltantes.
+    - Documentación pobre o inexistente, lo que dificulta la prueba o despliegue del proyecto.
+    - Errores importantes que rompen la funcionalidad.
+    - Falta de escalabilidad o deuda técnica en la arquitectura.
+
+    Devuelve la respuesta como un objeto JSON con la siguiente estructura:
+    {
+      "grade": "S | A | B | C | D",
+      "summary": "Un breve resumen del análisis del repositorio.",
+      "redFlags": ["Problema crítico 1", "Problema crítico 2"],
+      "yellowFlags": ["Problema menor 1", "Problema menor 2"],
+      "greenFlags": ["Aspecto positivo 1", "Aspecto positivo 2"]
+    }
+  `;
+
+  const finalAnalysis = await analyzeText(prompt);
+
+  const all = {
+    content: readmeAnalysis.content,
+    analysis : JSON.parse(finalAnalysis)
+  }
+
+  return all
 }
