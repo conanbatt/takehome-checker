@@ -76,8 +76,20 @@ export async function fetchFileContent(
       path: file,
     });
 
-    // 📜 GitHub devuelve el contenido en base64, lo decodificamos
-    const content = Buffer.from(response.data.content, "base64").toString("utf-8");
+    let content = "";
+
+    if (Array.isArray(response.data)) {
+      const firstFile = response.data.find(entry => entry.type === "file");
+      if (!firstFile || !firstFile.download_url) {
+        throw new Error(`No file found in directory: ${file}`);
+      }
+
+      const fileResponse = await fetch(firstFile.download_url);
+      content = await fileResponse.text();
+    } else {
+      // 📜 Si es un archivo, decodificar el contenido en base64
+      content = Buffer.from(response.data.content, "base64").toString("utf-8");
+    }
 
     // 📝 Guardar en caché con timestamp actualizado
     fileContentCache.set(cacheKey, { content, timestamp: now });
