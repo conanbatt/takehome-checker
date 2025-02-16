@@ -4,7 +4,7 @@ const LoadingBanner = () => (
   <motion.div 
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
-    className="grid grid-cols-2 gap-6"
+    className="grid grid-cols-1 md:grid-cols-2 gap-6"
   >
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
       <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 animate-pulse"></div>
@@ -26,7 +26,6 @@ const LoadingBanner = () => (
       ))}
     </div>
   </motion.div>
-  );
-  
-  export default LoadingBanner;
-  
+);
+
+export default LoadingBanner;

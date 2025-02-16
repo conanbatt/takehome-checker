@@ -23,22 +23,22 @@ export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
   const {
     content: readme,
     analysis,
-  } = data ?? {}
+  } = data ?? {};
 
   const handleAnalyzeClick = () => {
     refetch();
   };
 
   return (
-    <div className="max-w-7xl mx-auto pt-6">
-      <div className="w-full flex flex-row gap-4">
+    <div className="max-w-7xl mx-auto pt-6 px-4">
+      <div className="w-full flex flex-col sm:flex-row gap-4">
         <RepositoryList repos={repos} onSelect={setSelectedRepo} />
         <button
           onClick={handleAnalyzeClick}
-          className="p-2 px-6 bg-blue-500 text-white rounded-md disabled:bg-gray-300 flex-4"
+          className="p-3 w-full sm:w-auto bg-blue-500 text-white rounded-md disabled:bg-gray-300"
           disabled={!selectedRepo || isLoading}
         >
-          {isLoading ? 'Analyzing...' : 'Analyze Project'}
+          {isLoading ? "Analyzing..." : "Analyze Project"}
         </button>
       </div>
 
@@ -59,25 +59,26 @@ export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
           Error: {error instanceof Error ? error.message : "An error occurred"}
         </p>
       )}
-      {isSuccess &&
-        (<>
+
+      {isSuccess && (
+        <>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="grid grid-cols-2 gap-6 mt-6 pb-6"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pb-6"
           >
-            <div className="">
+            <div>
               <ReadmeViewer markdown={readme} />
             </div>
-            <div className="">
+            <div>
               {analysis && <ProjectAnalysis {...analysis} />}
             </div>
           </motion.div>
 
-          <hr className="w-full my-8 lg:col-span-2" />
+          <hr className="w-full my-8" />
           <AppInfoWithVideo appName="Take Home Checker" videoUrl="https://www.youtube.com/embed/aeyAG2DPWz0?si=IeayRmBlEt0Iv2-T" />
         </>
-        )}
+      )}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Repo } from "@/types/repo";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./ui/select";
 
