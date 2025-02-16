@@ -6,6 +6,7 @@ import { useProjectAnalysis } from "@/hooks/useProjectAnalysis";
 import ReadmeViewer from "./ReadmeViewer";
 import LoadingBanner from "./LoadingBanner";
 import { motion } from "framer-motion";
+import useLoadingMessage from "@/hooks/useLoadingMessage";
 
 interface RepoAnalysisProps {
   repos: Repo[];
@@ -15,7 +16,8 @@ interface RepoAnalysisProps {
 export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
   const [selectedRepo, setSelectedRepo] = useState<Repo | null>(null);
 
-  const { data, isLoading, isError, error, isSuccess, refetch } = useProjectAnalysis(selectedRepo, token);
+  const { data, isLoading, isError, error, refetch } = useProjectAnalysis(selectedRepo, token);
+  const loadingMessage = useLoadingMessage(isLoading);
 
   const {
     content: readme,
@@ -33,7 +35,7 @@ export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
         <button
           onClick={handleAnalyzeClick}
           className="p-2 px-6 bg-blue-500 text-white rounded-md disabled:bg-gray-300 flex-4"
-          disabled={!selectedRepo}
+          disabled={!selectedRepo || isLoading}
         >
           {isLoading ? 'Analyzing...' : 'Analyze Project'}
         </button>
@@ -41,7 +43,7 @@ export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
 
       {isLoading && (
         <div className="text-center mb-6 text-gray-600 dark:text-gray-300 mt-6">
-          This will take a little...
+          {loadingMessage}
         </div>
       )}
 
@@ -61,7 +63,7 @@ export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-2 gap-6 mt-6"
+          className="grid grid-cols-2 gap-6 mt-6 pb-6"
         >
           <div className="">
             <ReadmeViewer markdown={readme} />
