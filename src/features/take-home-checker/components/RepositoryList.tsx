@@ -14,8 +14,7 @@ export function RepositoryList({ repos, onSelect }: RepositoryListProps) {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4  flex align-center">Select a repository to check</h2>
+    <div className="w-full mx-auto flex-1">
       {repos?.length > 0 ? (
         <RepoSelector repos={repos} onChange={handleSelect} />
       ) : (

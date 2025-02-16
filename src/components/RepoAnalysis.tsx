@@ -3,8 +3,9 @@ import { Repo } from "@/types/repo";
 import ProjectAnalysis from "./ProjectAnalysis";
 import { RepositoryList } from "@/features/take-home-checker/components/RepositoryList";
 import { useProjectAnalysis } from "@/hooks/useProjectAnalysis";
-import LoadingSpinner from "./LoadingSpinner";
 import ReadmeViewer from "./ReadmeViewer";
+import LoadingBanner from "./LoadingBanner";
+import { motion } from "framer-motion";
 
 interface RepoAnalysisProps {
   repos: Repo[];
@@ -26,36 +27,50 @@ export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
   };
 
   return (
-    <div>
-      <RepositoryList repos={repos} onSelect={setSelectedRepo} />
-      {selectedRepo && (
-        <div className="w-full flex justify-center">
-          <button
-            onClick={handleAnalyzeClick}
-            className="mt-4 p-2 bg-blue-500 text-white rounded-md"
-          >
-            Analyze Project
-          </button>
+    <div className="max-w-7xl mx-auto pt-6">
+      <div className="w-full flex flex-row gap-4">
+        <RepositoryList repos={repos} onSelect={setSelectedRepo} />
+        <button
+          onClick={handleAnalyzeClick}
+          className="p-2 px-6 bg-blue-500 text-white rounded-md disabled:bg-gray-300 flex-4"
+          disabled={!selectedRepo}
+        >
+          {isLoading ? 'Analyzing...' : 'Analyze Project'}
+        </button>
+      </div>
+
+      {isLoading && (
+        <div className="text-center mb-6 text-gray-600 dark:text-gray-300 mt-6">
+          This will take a little...
         </div>
       )}
 
       {isLoading && (
-        <div className="w-full flex justify-center mt-4">
-          <LoadingSpinner />
+        <div className="w-full mt-4">
+          <LoadingBanner />
         </div>
       )}
 
-      {isError && <p className="text-red-500 text-center">Error: {error instanceof Error ? error.message : "An error occurred"}</p>}
-      {readme &&
-      <div className="flex flex-col md:flex-row gap-4 px-6">
-        <div className="md:w-1/2">
-          <ReadmeViewer markdown={readme}/>
-        </div>
-        <div className="md:w-1/2 space-y-4">
-          {analysis && <ProjectAnalysis {...analysis} />}
-        </div>
-      </div>
-      }
+      {isError && (
+        <p className="text-red-500 text-center">
+          Error: {error instanceof Error ? error.message : "An error occurred"}
+        </p>
+      )}
+
+      {readme && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid grid-cols-2 gap-6 mt-6"
+        >
+          <div className="">
+            <ReadmeViewer markdown={readme} />
+          </div>
+          <div className="">
+            {analysis && <ProjectAnalysis {...analysis} />}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,10 @@
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import Card from "./Card";
 
 const ReadmeViewer = ({ markdown }: { markdown: string }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md max-h-[60vh] overflow-y-auto">
+    <Card fullHeight maxHeight={"75vh"}>
         <ReactMarkdown
             components={{
                 h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mt-4 mb-2" {...props} />,
@@ -31,7 +32,7 @@ const ReadmeViewer = ({ markdown }: { markdown: string }) => (
         >
             {markdown}
         </ReactMarkdown>
-    </div>
+    </Card>
 );
 
 export default ReadmeViewer;
