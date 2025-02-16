@@ -15,10 +15,9 @@ const Header = () => {
       <nav className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
         <Link
           href="/"
-          className="text-xl flex gap-2 items-center text-nowrap col-span-3"
+          className="text-xl flex gap-2 items-center text-nowrap col-span-3 text-sm dark:text-white hover:text-black/80 dark:hover:text-white/80 cursor-pointer hover:text-indigo-300"
         >
           <Image
-            className="invert dark:invert-0"
             src="/images/logo-white.svg"
             alt="Icon."
             width={20}

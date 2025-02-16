@@ -20,15 +20,15 @@ export default function RepoSelector({ repos, onChange }: RepoSelectorProps) {
   return (
     <div className="w-full mx-auto">
       <Select onValueChange={handleValueChange}>
-        <SelectTrigger className="w-full p-2 border rounded-md bg-white shadow-sm focus:ring-2 focus:ring-blue-500 min-h-[64px]">
+        <SelectTrigger className="w-full p-2 border rounded-md bg-white dark:bg-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 min-h-[64px] dark:border-gray-700 dark:text-white">
           <SelectValue placeholder="Select a repository" />
         </SelectTrigger>
-        <SelectContent className="bg-white shadow-lg rounded-md min-h-[64px]">
+        <SelectContent className="bg-white dark:bg-gray-700 shadow-lg rounded-md min-h-[64px]">
           {repos.map((repo) => (
             <SelectItem key={repo.id} value={repo.id.toString()}>
-              <div className="text-base cursor-pointer text-left text-gray-700">
+              <div className="text-base cursor-pointer text-left text-gray-700 dark:text-white">
                 {repo.name}
-                <div className="text-sm text-gray-500 truncate">
+                <div className="text-sm text-gray-500 truncate dark:text-gray-400">
                   {repo.description
                     ? repo.description.length > 100
                       ? `${repo.description.slice(0, 100)}...`

@@ -1,12 +1,29 @@
-import React, { PropsWithChildren } from "react";
+"use client";
+
+import React, { PropsWithChildren, useEffect, useState } from "react";
 
 export const ThemeContext = React.createContext({ isDark: false, setIsDark: (p: boolean) => { } });
 
 export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
-    const [isDark, setIsDark] = React.useState(false);
+    const [isDark, setIsDark] = useState(false);
 
-    React.useEffect(() => {
-        document.documentElement.classList.toggle('dark', isDark);
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const storedTheme = window.localStorage.getItem("theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+            setIsDark(storedTheme ? storedTheme === "dark" : prefersDark);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (isDark) {
+            document.documentElement.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", "light");
+        }
     }, [isDark]);
 
     return (
