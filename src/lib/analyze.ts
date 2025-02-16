@@ -1,6 +1,7 @@
 import { analyzeText } from "@/lib/openai";
 import { Octokit } from "octokit";
 import { fetchFileContent, fetchGitHistory, fetchReadme, fetchRelevantFiles, fetchRepoFiles } from "./github";
+import { extractJsonFromString } from "./utils";
 
 export async function analyzeReadme(owner: string, repo: string, octokit: Octokit) {
   const readmeContent = await fetchReadme(owner, repo, octokit);
@@ -100,7 +101,6 @@ export async function analyzeCodeQuality(owner: string, repo: string, octokit: O
   `;
 
   const analysis = await analyzeText(prompt);
-  console.log("🚀 ~ analyzeCodeQuality ~ analysis:", analysis)
   return { analysis }
 }
 
@@ -142,11 +142,7 @@ export async function analyzeRepository(owner: string, repo: string, octokit: Oc
     Criterios de Bandera Verde (aspectos positivos):
     💯 **Desafíos take-home excepcionales**
     Las entregas excepcionales son aquellas memorables para los entrevistadores. Las van a recordar mucho tiempo después de que se hayan hecho porque se destacan entre las demás.
-    Las entregas que impresionan evidencian excelentes rasgos como experiencia, creatividad, intuición e ingenio. Este es el momento para venderte en lugar de vender a un ingeniero. ¡Usá tus habilidades para hacer algo que nadie más haría!
-    Algunos ejemplos:
-    - [ ] Enseñale algo al entrevistador: Presentá un nuevo concepto, técnica o giro que el entrevistador probablemente no conozca. Aportá una perspectiva innovadora que sorprenda.
-    - [ ] Resolvé el desafío de una manera creativa: Hacelo de manera innovadora, que demuestre ingenio.
-    - [ ] Agregá una característica inesperada: Demostrá tu sentido del producto mejorando la experiencia del usuario con una característica innovadora pero necesaria.
+    Las entregas que impresionan evidencian excelentes rasgos como experiencia, creatividad, intuición e ingenio.
 
     **Checklist General**:
     - **Stack tecnológico seleccionado**: Elegir el stack más actualizado y cercano al cliente.
@@ -169,17 +165,16 @@ export async function analyzeRepository(owner: string, repo: string, octokit: Oc
     {
       "grade": "S | A | B | C | D",
       "summary": "Un breve resumen del análisis del repositorio.",
-      "redFlags": ["Problema crítico 1", "Problema crítico 2"],
-      "yellowFlags": ["Problema menor 1", "Problema menor 2"],
-      "greenFlags": ["Aspecto positivo 1", "Aspecto positivo 2"]
+      "redFlags": [], // si hay lista los problemas criticos en este array
+      "yellowFlags": [],// si hay lista los problemas menores en este array
+      "greenFlags": [], si hay lista los aspectos excepcionales en este array
     }
   `;
 
   const finalAnalysis = await analyzeText(prompt);
-
   const all = {
     content: readmeAnalysis.content,
-    analysis : JSON.parse(finalAnalysis)
+    analysis : extractJsonFromString(finalAnalysis)
   }
 
   return all

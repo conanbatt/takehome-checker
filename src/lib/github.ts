@@ -51,7 +51,6 @@ export async function fetchRepoFiles(owner: string, repo: string, octokit: Octok
   return files;
 }
 
-
 const fileContentCache = new Map<string, { content: string; timestamp: number }>();
 
 export async function fetchFileContent(
@@ -64,7 +63,6 @@ export async function fetchFileContent(
   const cachedData = fileContentCache.get(cacheKey);
   const now = Date.now();
 
-  // 🔄 Si los datos están en caché y aún son válidos, retornarlos
   if (cachedData && now - cachedData.timestamp < CACHE_DURATION) {
     return cachedData.content;
   }
@@ -87,11 +85,9 @@ export async function fetchFileContent(
       const fileResponse = await fetch(firstFile.download_url);
       content = await fileResponse.text();
     } else {
-      // 📜 Si es un archivo, decodificar el contenido en base64
       content = Buffer.from(response.data.content, "base64").toString("utf-8");
     }
 
-    // 📝 Guardar en caché con timestamp actualizado
     fileContentCache.set(cacheKey, { content, timestamp: now });
 
     return content;

@@ -7,6 +7,7 @@ interface AnalysisData {
     summary: string;
     redFlags: string[];
     yellowFlags: string[];
+    greenFlags: string[];
   }
 }
 
