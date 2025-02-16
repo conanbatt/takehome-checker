@@ -1,8 +1,11 @@
+import FlagCard from "./FlagCard";
+
 interface ProjectAnalysisProps {
   grade: "S" | "A" | "B" | "C" | "D";
   summary: string;
   redFlags: string[];
   yellowFlags: string[];
+  greenFlags: string[];
 }
 
 const gradeColors = {
@@ -18,34 +21,25 @@ export default function ProjectAnalysis({
   summary,
   redFlags,
   yellowFlags,
+  greenFlags,
 }: ProjectAnalysisProps) {
   return (
-    <div className="max-w-2xl mx-auto p-6 border rounded-lg shadow-lg bg-white">
+    <div>
       <div className={`text-white p-3 rounded-md ${gradeColors[grade]}`}>
         <h2 className="text-lg font-bold">Project Score: {grade}</h2>
       </div>
       <p className="mt-4 text-gray-700">{summary}</p>
 
       {redFlags.length > 0 && (
-        <div className="mt-6">
-          <h3 className="text-red-600 font-semibold text-lg">🚩 Red Flags ({redFlags.length})</h3>
-          <ul className="list-disc list-inside text-gray-700">
-            {redFlags.map((flag, index) => (
-              <li key={index}>{flag}</li>
-            ))}
-          </ul>
-        </div>
+        <FlagCard type="red" flags={redFlags} className="mt-4"/>
       )}
 
       {yellowFlags.length > 0 && (
-        <div className="mt-6">
-          <h3 className="text-yellow-600 font-semibold text-lg">⚠️ Yellow Flags ({yellowFlags.length})</h3>
-          <ul className="list-disc list-inside text-gray-700">
-            {yellowFlags.map((flag, index) => (
-              <li key={index}>{flag}</li>
-            ))}
-          </ul>
-        </div>
+        <FlagCard type="yellow" flags={yellowFlags} className="mt-4"/>
+      )}
+
+      {greenFlags.length > 0 && (
+        <FlagCard type="green" flags={greenFlags} className="mt-4"/>
       )}
     </div>
   );
