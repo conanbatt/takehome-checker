@@ -14,6 +14,8 @@ const AppInfoWithVideo: React.FC<AppInfoWithVideoProps> = ({ appName, videoUrl }
         <Link
           href="https://ready.silver.dev"
           className="text-indigo-400 hover:text-indigo-300 cursor-pointer"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           Interview Ready
         </Link>
