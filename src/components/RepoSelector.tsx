@@ -10,37 +10,36 @@ interface RepoSelectorProps {
 }
 
 export default function RepoSelector({ repos, onChange }: RepoSelectorProps) {
-  const [selectedRepo, setSelectedRepo] = useState<Repo | null>(null);
-
   const handleValueChange = (value: string) => {
-    const repo = repos.find((repo) => repo.id === value) || null;
-    setSelectedRepo(repo);
+    const repo = repos.find((repo) => repo.id.toString() === value) || null;
     if (onChange) {
       onChange(repo);
     }
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full mx-auto">
       <Select onValueChange={handleValueChange}>
-        <SelectTrigger className="w-full p-2 border rounded-md bg-white shadow-sm focus:ring-2 focus:ring-blue-500">
+        <SelectTrigger className="w-full p-2 border rounded-md bg-white shadow-sm focus:ring-2 focus:ring-blue-500 min-h-[64px]">
           <SelectValue placeholder="Select a repository" />
         </SelectTrigger>
-        <SelectContent className="bg-white shadow-lg rounded-md">
+        <SelectContent className="bg-white shadow-lg rounded-md min-h-[64px]">
           {repos.map((repo) => (
-            <SelectItem key={repo.id} value={repo.id}>
-              {repo.name}
+            <SelectItem key={repo.id} value={repo.id.toString()}>
+              <div className="text-base cursor-pointer text-left text-gray-700">
+                {repo.name}
+                <div className="text-sm text-gray-500 truncate">
+                  {repo.description
+                    ? repo.description.length > 100
+                      ? `${repo.description.slice(0, 100)}...`
+                      : repo.description
+                    : "No description"}
+                </div>
+              </div>
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-
-      {selectedRepo && (
-        <div className="mt-4 p-4 border rounded-md bg-gray-50 shadow-sm align-center">
-          <h2 className="text-lg font-bold text-gray-900">{selectedRepo.name}</h2>
-          <p className="text-gray-700">{selectedRepo.description || "No description"}</p>
-        </div>
-      )}
     </div>
   );
 }
