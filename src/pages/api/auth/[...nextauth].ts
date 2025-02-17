@@ -9,16 +9,15 @@ export const authOptions: AuthOptions = {
             authorization: {
                 params: {
                     scope: 'repo user:email read:user',
-                    redirect_uri: process.env.NEXTAUTH_URL!,
                 },
             },
         }),
     ],
     callbacks: {
         async jwt({ token, account }) {
-            if (account) {
-                console.log("Github Account received: ", account);
-                token.accessToken = account.access_token!;
+            if (account && account.access_token) {
+                console.log("GitHub Account received: ", account);
+                token.accessToken = account.access_token;
             }
             return token;
         },
@@ -31,6 +30,17 @@ export const authOptions: AuthOptions = {
     },
     secret: process.env.NEXTAUTH_SECRET,
     debug: true,
+    logger: {
+        error(code, metadata) {
+            console.error("NextAuth Error:", code, metadata);
+        },
+        warn(code) {
+            console.warn("NextAuth Warning:", code);
+        },
+        debug(code, metadata) {
+            console.debug("NextAuth Debug:", code, metadata);
+        },
+    },
 };
 
 export default NextAuth(authOptions);
