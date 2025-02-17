@@ -5,6 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function truncate(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).trim() + "…";
+}
+
 export function extractJsonFromString(input: string) {
   const match = input.match(/```json\n([\s\S]*?)\n```/);
   if (!match) {

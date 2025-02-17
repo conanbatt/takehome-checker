@@ -60,7 +60,7 @@ export default function RepoAnalysis({ repos, token }: RepoAnalysisProps) {
         </p>
       )}
 
-      {isSuccess && (
+      {isSuccess && readme && (
         <>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

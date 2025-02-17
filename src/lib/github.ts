@@ -85,7 +85,7 @@ export async function fetchFileContent(
       const fileResponse = await fetch(firstFile.download_url);
       content = await fileResponse.text();
     } else {
-      content = Buffer.from(response.data.content, "base64").toString("utf-8");
+      content = Buffer.from((response.data as {content: string}).content, "base64").toString("utf-8");
     }
 
     fileContentCache.set(cacheKey, { content, timestamp: now });

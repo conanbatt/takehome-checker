@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: "Repository and owner are required." });
   }
 
-  const octokit = new Octokit({ auth: session.accessToken });
+  const octokit = new Octokit({ auth: (session as unknown as { accessToken: string }).accessToken });
 
   try {
     const analysisResults = await analyzeRepository(owner.login, repo, octokit);

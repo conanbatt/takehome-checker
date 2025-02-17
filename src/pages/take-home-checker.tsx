@@ -6,12 +6,12 @@ import { Octokit } from "octokit";
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
     
-    if (!session || !session.accessToken) {
+    if (!session || !(session as unknown as { accessToken: string }).accessToken) {
         return { props: { repos: [], isAuthenticated: false } };
     }
 
     try {
-        const octokit = new Octokit({ auth: session.accessToken });
+        const octokit = new Octokit({ auth: (session as unknown as { accessToken: string }).accessToken });
         const { data: repos } = await octokit.request("GET /user/repos", {
             visibility: "all",
             per_page: 100,

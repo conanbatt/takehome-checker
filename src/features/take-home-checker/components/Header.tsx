@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { HiSun, HiMoon, HiMenu, HiX } from 'react-icons/hi';
 import { FaGithub } from 'react-icons/fa';
-import './Header.css';
 import { ThemeContext } from '@/components/ThemeContext';
 import LogOutGithub from './LogOutGithub';
 import Link from 'next/link';

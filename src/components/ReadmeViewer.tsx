@@ -28,24 +28,19 @@ const ReadmeViewer = ({ markdown }: { markdown: string; }) => {
                     ul: ({ ...props }) => <ul className="list-disc pl-5 mb-4" {...props} />,
                     ol: ({ ...props }) => <ol className="list-decimal pl-5 mb-4" {...props} />,
                     li: ({ ...props }) => <li className="mb-2" {...props} />,
-                    code: ({ inline, children }) =>
-                        inline ? (
-                            <code className={`px-1 py-0.5 rounded-sm text-sm ${isDark ? "bg-gray-700" : "bg-gray-100"}`}>
-                                {children}
-                            </code>
-                        ) : (
-                            <SyntaxHighlighter
-                                language="javascript"
-                                style={isDark ? darcula : docco}
-                                className="my-4 rounded-md"
-                                customStyle={{
-                                    fontSize: "14px",
-                                    background: isDark ? "#1e293b" : "#f6f8fa",
-                                }}
-                            >
-                                {String(children).replace(/\n$/, '')}
-                            </SyntaxHighlighter>
-                        ),
+                    code: ({ children }) => (
+                        <SyntaxHighlighter
+                            language="javascript"
+                            style={isDark ? darcula : docco}
+                            className="my-4 rounded-md"
+                            customStyle={{
+                                fontSize: "14px",
+                                background: isDark ? "#1e293b" : "#f6f8fa",
+                            }}
+                        >
+                            {String(children).replace(/\n$/, '')}
+                        </SyntaxHighlighter>
+                    ),
                 }}
             >
                 {markdown}

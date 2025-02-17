@@ -11,7 +11,14 @@ interface AnalysisData {
   }
 }
 
-async function fetchProjectAnalysis(repoName: string, owner: string, token: string): Promise<AnalysisData> {
+async function fetchProjectAnalysis(
+  repoName: string,
+  owner: {
+    login: string;
+    avatar_url: string;
+    html_url: string;
+  },
+  token: string): Promise<AnalysisData> {
   const response = await fetch("/api/analyze/project", {
     method: "POST",
     headers: {
@@ -29,7 +36,14 @@ async function fetchProjectAnalysis(repoName: string, owner: string, token: stri
 }
 
 export function useProjectAnalysis(
-  selectedRepo: { name: string; owner: string } | null,
+  selectedRepo: {
+    name: string;
+    owner: {
+      login: string;
+      avatar_url: string;
+      html_url: string;
+    }
+  } | null,
   token: string
 ) {
   const queryKey = ["projectAnalysis", selectedRepo?.name, selectedRepo?.owner, token];

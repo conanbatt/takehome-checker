@@ -17,7 +17,7 @@ export const authOptions: AuthOptions = {
         },
         async session({ session, token }) {
             if (token) {
-                session.accessToken = token.accessToken!;
+                (session as unknown as { accessToken: string }).accessToken = token.accessToken as string;
             }
             return session;
         },
