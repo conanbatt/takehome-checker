@@ -1,6 +1,6 @@
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { docco, darcula } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { docco, darcula } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import Card from "./Card";
 import React from "react";
 import { ThemeContext } from "./ThemeContext";
