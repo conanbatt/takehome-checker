@@ -2,7 +2,8 @@
 
 import React, { PropsWithChildren, useEffect, useState } from "react";
 
-export const ThemeContext = React.createContext({ isDark: false, setIsDark: (p: boolean) => { } });
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const ThemeContext = React.createContext({ isDark: false, setIsDark: (_p: boolean) => { } });
 
 export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const [isDark, setIsDark] = useState(false);

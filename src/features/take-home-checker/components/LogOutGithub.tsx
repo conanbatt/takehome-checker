@@ -1,4 +1,3 @@
-import { LogOutIcon } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import {  } from "react-icons/fi";
 import { HiOutlineLogout } from "react-icons/hi";

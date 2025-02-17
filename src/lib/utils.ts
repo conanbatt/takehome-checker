@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function extractJsonFromString(input: string): any {
+export function extractJsonFromString(input: string) {
   const match = input.match(/```json\n([\s\S]*?)\n```/);
   if (!match) {
     const fallbackMatch = input.match(/{[\s\S]*}/);
@@ -14,5 +14,5 @@ export function extractJsonFromString(input: string): any {
     }
     throw new Error("No valid JSON found in the string.");
   }
-  return JSON.parse(match[1]);
+  return JSON.parse(match[1]) as Record<string, unknown> | unknown[];
 }
