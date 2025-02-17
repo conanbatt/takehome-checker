@@ -23,7 +23,7 @@ export async function fetchReadme(owner: string, repo: string, octokit: Octokit)
     return data?.content ? Buffer.from(data.content, "base64").toString("utf-8") : null;
   } catch (error) {
     console.error("Error fetching README:", error);
-    return null;
+    return '### No Readme'
   }
 }
 
