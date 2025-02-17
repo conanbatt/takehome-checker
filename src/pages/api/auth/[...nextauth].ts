@@ -16,6 +16,7 @@ export const authOptions: AuthOptions = {
     callbacks: {
         async jwt({ token, account }) {
             if (account) {
+                console.log("Github Account received: ", account);
                 token.accessToken = account.access_token!;
             }
             return token;
@@ -31,8 +32,7 @@ export const authOptions: AuthOptions = {
         },
     },
     secret: process.env.NEXTAUTH_SECRET,
+    debug: true,
 };
 
-
 export default NextAuth(authOptions);
-
