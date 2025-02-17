@@ -9,6 +9,7 @@ export const authOptions: AuthOptions = {
             authorization: {
                 params: {
                     scope: 'repo user:email read:user',
+                    redirect_uri: process.env.NEXTAUTH_URL!,
                 },
             },
         }),
@@ -26,9 +27,6 @@ export const authOptions: AuthOptions = {
                 (session as unknown as { accessToken: string }).accessToken = token.accessToken as string;
             }
             return session;
-        },
-        async redirect({ url, baseUrl }) {
-            return url.startsWith(baseUrl) ? url : baseUrl;
         },
     },
     secret: process.env.NEXTAUTH_SECRET,
